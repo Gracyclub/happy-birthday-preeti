@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Happy Birthday Preeti 🎂</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary-pink: #f472b6;
+      --deep-pink: #db2777;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --text-main: #374151;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(180deg, #fce7f3 0%, #ffe4e6 50%, #fbcfe8 100%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 410px;
+      padding: 24px 18px 70px;
+      position: relative;
+    }
+
+    .music-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #fbcfe8;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(244, 114, 182, 0.25);
+      z-index: 1000;
+      cursor: pointer;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid #ffffff;
+      border-radius: 24px;
+      padding: 26px 20px;
+      text-align: center;
+      box-shadow: 0 12px 25px rgba(244, 114, 182, 0.16);
+      margin-bottom: 20px;
+    }
+
+    h1, h2 {
+      color: var(--deep-pink);
+      margin-bottom: 8px;
+    }
+
+    p {
+      line-height: 1.6;
+      font-size: 15px;
+      color: #4b5563;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #f472b6, #db2777);
+      color: #fff;
+      border: none;
+      padding: 13px 24px;
+      border-radius: 25px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 18px;
+      box-shadow: 0 6px 16px rgba(219, 39, 119, 0.28);
+      width: 100%;
+      font-size: 15px;
+      transition: transform 0.15s;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Step 0: Gate */
+    .input-field {
+      width: 85%;
+      padding: 12px 14px;
+      border: 2px dashed #f472b6;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: 2px;
+      margin: 16px auto 0;
+      outline: none;
+      background: #fff;
+      display: block;
+    }
+
+    /* Scratch Cards */
+    .scratch-item {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px 14px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      border: 1px solid #ffe4e6;
+    }
+
+    .scratch-cover {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #fbcfe8, #f472b6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 14px;
+      transition: opacity 0.3s ease;
+    }
+
+    .scratch-cover.scratched {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Envelope & Letter */
+    .envelope-box {
+      background: #fb7185;
+      border-radius: 20px;
+      padding: 38px 20px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(251, 113, 133, 0.35);
+    }
+
+    .wax-seal {
+      width: 52px;
+      height: 52px;
+      background: #f59e0b;
+      border: 3px solid #fde68a;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    .letter-paper {
+      background: #fffdfa;
+      border: 1px solid #fef08a;
+      border-radius: 20px;
+      padding: 24px 20px;
+      text-align: left;
+      font-family: 'Caveat', cursive;
+      font-size: 21px;
+      line-height: 1.5;
+      color: #374151;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      display: none;
+    }
+
+    .flex-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #f472b6, #db2777);
+      color: white;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 8px rgba(219, 39, 119, 0.25);
+    }
+
+    /* Polaroid Frames */
+    .polaroid {
+      background: white;
+      padding: 12px 12px 18px;
+      border-radius: 10px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      margin-bottom: 22px;
+      transform: rotate(-1.5deg);
+      border: 1px solid #f3f4f6;
+    }
+
+    .polaroid:nth-child(even) {
+      transform: rotate(2deg);
+    }
+
+    .polaroid img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      border-radius: 6px;
+      background-color: #fdf2f8;
+    }
+
+    .polaroid p {
+      font-family: 'Caveat', cursive;
+      font-size: 22px;
+      margin-top: 10px;
+      color: #db2777;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    /* Clouds Wishes */
+    .clouds-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .cloud-pill {
+      background: #ffffff;
+      border: 2px dashed #f472b6;
+      padding: 10px 18px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--deep-pink);
+      font-size: 14px;
+      transition: all 0.25s ease;
+    }
+
+    .cloud-pill.opened {
+      background: #fdf2f8;
+      border-style: solid;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="music-btn" onclick="toggleMusic()">🎵 Music</button>
+  <audio id="bgm" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="app">
+
+    <!-- Step 0: Gate -->
+    <div id="step-0" class="screen active">
+      <div class="card">
+        <span style="font-size: 44px;">🔐</span>
+        <h2 style="margin-top: 10px;">Restricted Area</h2>
+        <p>This surprise is locked for the Birthday Girl only!</p>
+        <input type="text" id="passInput" class="input-field" placeholder="DD-MM" />
+        <p id="err" style="color: #e11d48; font-size: 13px; margin-top: 8px; display: none;">Wrong passcode! Hint: 27-09 💕</p>
+        <button class="btn" onclick="checkPass()">Unlock Surprise 🎂</button>
+      </div>
+    </div>
+
+    <!-- Step 1: Greeting -->
+    <div id="step-1" class="screen">
+      <div class="card">
+        <span style="font-size: 58px;">🐱🎂</span>
+        <h1 style="margin-top: 10px;">Happy Birthday, Preeti!</h1>
+        <p>A little piece of code crafted specially for you to celebrate your day ✨</p>
+        <button class="btn" onclick="nextScreen(2)">Open Your Wishes 💌</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Scratch Cards -->
+    <div id="step-2" class="screen">
+      <h2 style="text-align: center;">Tap each card to reveal! 🌸</h2>
+      <p style="text-align: center; margin-bottom: 16px; font-size: 13px;">Unlock all cards to continue</p>
+
+      <div class="scratch-item" onclick="scratch(this)">
+        <div class="scratch-cover">✨ Tap to reveal Flex ✨</div>
+        <p style="font-weight: 700; color: #db2777;">Besties since 2016 & still unbreakable! 10 saal ka flex hai yeh 💅✨</p>
+      </div>
+
+      <div class="scratch-item" onclick="scratch(this)">
+        <div class="scratch-cover">✨ Tap to reveal ✨</div>
+        <p>You bring so much light and calm into my world 🌟</p>
+      </div>
+
+      <div class="scratch-item" onclick="scratch(this)">
+        <div class="scratch-cover">✨ Tap to reveal ✨</div>
+        <p>Grateful for every random laugh, rant, and memory together 🤍</p>
+      </div>
+
+      <div class="scratch-item" onclick="scratch(this)">
+        <div class="scratch-cover">✨ Tap to reveal ✨</div>
+        <p>Wishing you the happiest, healthiest and brightest year ahead! 🥂</p>
+      </div>
+
+      <button id="scratchDoneBtn" class="btn" style="display: none;" onclick="nextScreen(3)">Continue Journey 💖</button>
+    </div>
+
+    <!-- Step 3: Letter -->
+    <div id="step-3" class="screen">
+      <h2 style="text-align: center;">A Letter from My Heart...</h2>
+      <p style="text-align: center; margin-bottom: 20px;">Tap the wax seal to unseal it</p>
+
+      <div id="envelope" class="envelope-box" onclick="openLetter()">
+        <div class="wax-seal">💌</div>
+        <p style="margin-top: 14px; font-weight: bold; letter-spacing: 1px; font-size: 16px;">FOR PREETI</p>
+      </div>
+
+      <div id="letter" class="letter-paper">
+        <div class="flex-badge">👑 Since 2016 • 10 Years & Counting</div>
+        <h3 style="color: #db2777; margin-bottom: 8px; font-family: inherit;">To Dearest Preeti,</h3>
+        <p>Happy Birthday! 🎂</p>
+        <p style="margin-top: 10px;">
+          Log aate hain aur chale jaate hain, par hamari dosti 2016 se leke aaj tak aisi hi solid hai! Pure 10 saal ka flex hai yeh, and I am so proud of our bond.
+        </p>
+        <p style="margin-top: 10px;">
+          From school/college days to all our rants, fits, and random gossips—having you by my side has been the biggest blessing. 
+        </p>
+        <p style="margin-top: 10px;">
+          May this year bring you closer to all your dreams, lots of peace, laughter, and endless glow. Always keep shining!
+        </p>
+        <p style="margin-top: 14px; text-align: right; font-weight: bold; color: #db2777;">— Always your biggest supporter 💕</p>
+        <button class="btn" style="margin-top: 18px;" onclick="nextScreen(4)">Our Core Memories 📸</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Core Memories -->
+    <div id="step-4" class="screen">
+      <h2 style="text-align: center;">Core Memories 📷</h2>
+      <p style="text-align: center; margin-bottom: 20px;">The aesthetic vibes that define you ✨</p>
+
+      <div class="polaroid">
+        <img src="preeti-pink.jpg" alt="Aesthetic Pink Vibe" />
+        <p>The prettiest aesthetic vibes 🌸</p>
+      </div>
+
+      <div class="polaroid">
+        <img src="preeti-dress.jpg" alt="Cute & Elegant" />
+        <p>Effortlessly graceful, always ☁️</p>
+      </div>
+
+      <div class="polaroid">
+        <img src="preeti-retro.jpg" alt="Iconic Fits" />
+        <p>The most iconic mirror selfies 📸</p>
+      </div>
+
+      <button class="btn" onclick="nextScreen(5)">Make a Wish ☁️</button>
+    </div>
+
+    <!-- Step 5: Clouds -->
+    <div id="step-5" class="screen">
+      <div class="card">
+        <h2>Tap Each Cloud ☁️</h2>
+        <p>Pick wishes for this year!</p>
+        
+        <div class="clouds-grid">
+          <div class="cloud-pill" onclick="popCloud(this, 'Endless Joy ✨')">☁️ Cloud 1</div>
+          <div class="cloud-pill" onclick="popCloud(this, 'Dream Big 🚀')">☁️ Cloud 2</div>
+          <div class="cloud-pill" onclick="popCloud(this, 'Shine Always 💎')">☁️ Cloud 3</div>
+          <div class="cloud-pill" onclick="popCloud(this, 'Inner Peace 🌸')">☁️ Cloud 4</div>
+          <div class="cloud-pill" onclick="popCloud(this, 'Endless Success 🥂')">☁️ Cloud 5</div>
+        </div>
+
+        <p id="cloudMsg" style="margin-top: 20px; font-weight: 700; color: var(--deep-pink); min-height: 22px;"></p>
+        <button class="btn" onclick="blastFinal()">Celebrate Preeti! 🎊</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function triggerConfetti() {
+      confetti({
+        particleCount: 45,
+        spread: 55,
+        origin: { y: 0.8 }
+      });
+    }
+
+    function checkPass() {
+      const val = document.getElementById('passInput').value.trim();
+      if (val === '27-09' || val === '2709' || val.toLowerCase() === 'preeti') {
+        triggerConfetti();
+        nextScreen(1);
+      } else {
+        document.getElementById('err').style.display = 'block';
+      }
+    }
+
+    function nextScreen(idx) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-' + idx).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    let scratchedCount = 0;
+    function scratch(el) {
+      const cover = el.querySelector('.scratch-cover');
+      if (!cover.classList.contains('scratched')) {
+        cover.classList.add('scratched');
+        scratchedCount++;
+        triggerConfetti();
+        if (scratchedCount >= 4) {
+          document.getElementById('scratchDoneBtn').style.display = 'block';
+        }
+      }
+    }
+
+    function openLetter() {
+      document.getElementById('envelope').style.display = 'none';
+      document.getElementById('letter').style.display = 'block';
+      triggerConfetti();
+    }
+
+    function popCloud(btn, text) {
+      btn.innerText = text;
+      btn.classList.add('opened');
+      document.getElementById('cloudMsg').innerText = "Granted: " + text;
+      triggerConfetti();
+    }
+
+    function blastFinal() {
+      const duration = 3000;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }());
+    }
+
+    function toggleMusic() {
+      const audio = document.getElementById('bgm');
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+  </script>
+</body>
+</html>
